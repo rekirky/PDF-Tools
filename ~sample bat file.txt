@@ -1,0 +1,41 @@
+@echo off
+cd /d C:\Users\<user>\Documents\GitHub\PDF-Tools
+
+:menu
+cls
+echo Menu:
+echo 1. PDF Joiner
+echo 2. PDF Splitter
+echo 3. PDF Crop
+echo 4. Quit
+echo.
+
+choice /c 1234 /n /m "Enter your choice: "
+
+if errorlevel 4 goto quit
+if errorlevel 3 goto option3
+if errorlevel 2 goto option2
+if errorlevel 1 goto option1
+
+:option1
+echo You selected Option 1.
+python "PDF-FileJoin.py"
+pause
+goto menu
+
+:option2
+echo You selected Option 2.
+python "PDF-FileSplit.py"
+pause
+goto menu
+
+:option3
+echo You selected Option 3.
+python "PDF-FileCrop.py"
+
+:quit
+echo Quitting the program
+exit
+
+
+pause
