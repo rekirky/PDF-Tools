@@ -30,7 +30,7 @@ page = doc[page_number]
 
 for i, page in enumerate(doc):
     pix = page.get_pixmap()
-    image_path = f'page_{i+1}.png'  # Save each page as a separate image file
+    image_path = f"{file_directory}/page_{i+1}.png"  # Save each page as a separate image file
     pix.save(image_path)
     points = []
     image = cv2.imread(image_path)
@@ -52,6 +52,7 @@ def mouse_callback(event, x, y, flags, param):
             output.save(f"{file_directory}/{crop_file[:-8]}.pdf")
             os.remove(f"{file_directory}/{crop_file}")
             os.remove(f"{pdf_path}-crop")
+            os.remove(f"{image_path}")
             print(f"File cropped successfully")
 
 cv2.namedWindow('Image')
