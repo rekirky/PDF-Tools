@@ -11,7 +11,9 @@ I also made a quick bat file so I can run these from a single source quickly.
 * Join multiple files into one
 * Split file into multiple ones
 * Crop a file using mouse input
+* Rotate a file 90 degrees clockwise or counter clockwise
 
 ## To come (probably - depends on my needs)
 
-* Page rotate (ideally per page & using left/right keys)
+* Crop an entire document
+* Run multiple commands at once - rotate & crop
