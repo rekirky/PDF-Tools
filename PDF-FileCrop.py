@@ -8,10 +8,10 @@ import fitz
 import os
 #from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-import cv2
+import cv2 # pip install opencv-python
 import PyPDF2
 from PIL import Image
-import win32gui
+import win32gui #pip istall win32gui
 import win32con
 import win32api
 
