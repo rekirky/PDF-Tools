@@ -160,6 +160,17 @@
 
   </main>
 
+  <!-- ── Upload overlay ── -->
+  <div id="upload-overlay" hidden>
+    <div class="upload-overlay-box">
+      <p id="upload-overlay-msg">Uploading…</p>
+      <div class="progress-track">
+        <div class="progress-bar" id="upload-progress-bar"></div>
+      </div>
+      <p id="upload-progress-pct">0%</p>
+    </div>
+  </div>
+
   <script>
     document.querySelectorAll('.tab:not(.disabled)').forEach(tab => {
       tab.addEventListener('click', () => {

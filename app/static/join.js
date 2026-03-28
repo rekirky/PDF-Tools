@@ -1,3 +1,5 @@
+import { showUploadOverlay, hideUploadOverlay, uploadWithProgress } from '/static/utils.js';
+
 // ── State ─────────────────────────────────────────────────────────────────────
 let fileList   = [];   // [{id, filename, page_count}]
 let dragSrcIdx = null;
@@ -46,24 +48,19 @@ async function handleFiles(files) {
     setStatus(`${skipped} non-PDF file(s) skipped.`, 'error');
   }
 
-  setStatus(`Uploading ${pdfs.length} file(s)…`);
-
   const formData = new FormData();
   pdfs.forEach(f => formData.append('files', f));
 
+  showUploadOverlay(`Uploading ${pdfs.length} file(s)…`);
   let data;
   try {
-    const res = await fetch('/api/join/upload', { method: 'POST', body: formData });
-    if (!res.ok) {
-      const err = await res.json();
-      setStatus(err.detail || 'Upload failed.', 'error');
-      return;
-    }
-    data = await res.json();
-  } catch {
-    setStatus('Upload failed — server unreachable.', 'error');
+    data = await uploadWithProgress('/api/join/upload', formData);
+  } catch (err) {
+    hideUploadOverlay();
+    setStatus(err.message, 'error');
     return;
   }
+  hideUploadOverlay();
 
   fileList.push(...data);
   joinUploadSection.hidden = true;

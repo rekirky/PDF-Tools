@@ -1,4 +1,5 @@
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs';
+import { showUploadOverlay, hideUploadOverlay, uploadWithProgress } from '/static/utils.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs';
@@ -57,23 +58,19 @@ async function handleFile(file) {
     return;
   }
 
-  setStatus('Uploading…');
   const formData = new FormData();
   formData.append('file', file);
 
+  showUploadOverlay();
   let data;
   try {
-    const res = await fetch('/api/upload', { method: 'POST', body: formData });
-    if (!res.ok) {
-      const err = await res.json();
-      setStatus(err.detail || 'Upload failed.', 'error');
-      return;
-    }
-    data = await res.json();
-  } catch {
-    setStatus('Upload failed — server unreachable.', 'error');
+    data = await uploadWithProgress('/api/upload', formData);
+  } catch (err) {
+    hideUploadOverlay();
+    setStatus(err.message, 'error');
     return;
   }
+  hideUploadOverlay();
 
   sessionId   = data.session_id;
   currentPage = 1;
