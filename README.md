@@ -9,9 +9,12 @@ Browser-based PDF manipulation tools, self-hosted via Docker.
 | Crop   | v2.1.0  | Working |
 | Join   | v2.2.0  | Working |
 | Split  | v2.3.0  | Working |
-| Rotate | —       | Planned |
+| Rotate | v2.4.0  | Working |
 
 ## Changelog
+
+### v2.4.0
+- Added Rotate tool — upload a PDF, select pages, choose 90° right / 180° / 90° left, download rotated PDF
 
 ### v2.3.0
 - Added Split tool — upload a PDF, select pages via thumbnail grid, download a ZIP of individual PDFs
