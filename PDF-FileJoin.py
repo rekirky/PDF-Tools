@@ -1,5 +1,4 @@
-# Split PDF file into single pages
-# Creates a folder next to the file with each individual page
+# Merge PDF file into single pages
 
 ## Modules
 import PyPDF2 

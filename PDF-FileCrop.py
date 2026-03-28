@@ -1,17 +1,9 @@
-#Working...
-#Loads up a screen to select a file, crop using mouse click top left to bottom right
-#Saves a PNG and then converts that to PDF
-#Remove temporary files and original uncropped file
-#Remains cropped PDF
-
 import fitz
 import os
-#from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-import cv2 # pip install opencv-python
-import PyPDF2
+import cv2  # pip install opencv-python
 from PIL import Image
-import win32gui #pip istall win32gui
+import win32gui
 import win32con
 import win32api
 
@@ -19,52 +11,78 @@ import win32api
 pdf_path = askopenfilename()
 file_name = os.path.basename(pdf_path)
 file_directory = os.path.dirname(pdf_path)
-folder = file_name[:-4]
-
-#pdf_path = 'path/to/input.pdf'
 doc = fitz.open(pdf_path)
 
-# Select the cropping area using mouse interaction
-page_number = 0  # Specify the page number to crop (0 for the first page)
-page = doc[page_number]
+# Convert first page to image
+page = doc[0]
+pix = page.get_pixmap()
+image_path = os.path.join(file_directory, "page_1.png")
+pix.save(image_path)
+image = cv2.imread(image_path)
+instruction_image = image.copy()
 
-for i, page in enumerate(doc):
-    pix = page.get_pixmap()
-    image_path = f"{file_directory}/page_{i+1}.png"  # Save each page as a separate image file
-    pix.save(image_path)
-    points = []
-    image = cv2.imread(image_path)
+# Globals for mouse interaction
+points = []
+click_stage = 0
+mouse_x, mouse_y = 0, 0
 
-# Mouse callback function
+def draw_centered_text(img, text, y_pos):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    scale = 1
+    thickness = 2
+    color = (0, 0, 0)
+    text_size = cv2.getTextSize(text, font, scale, thickness)[0]
+    text_x = (img.shape[1] - text_size[0]) // 2
+    cv2.putText(img, text, (text_x, y_pos), font, scale, color, thickness)
+
+def update_display():
+    display = instruction_image.copy()
+    if click_stage == 0:
+        draw_centered_text(display, "Click TOP LEFT corner", 50)
+    elif click_stage == 1:
+        draw_centered_text(display, "Click BOTTOM RIGHT corner", 50)
+        cv2.rectangle(display, points[0], (mouse_x, mouse_y), (255, 0, 0), 2)
+    cv2.imshow('Image', display)
+
 def mouse_callback(event, x, y, flags, param):
+    global click_stage, mouse_x, mouse_y
+    mouse_x, mouse_y = x, y
+    if event == cv2.EVENT_MOUSEMOVE:
+        update_display()
     if event == cv2.EVENT_LBUTTONDOWN:
         points.append((x, y))
-        if len(points) == 2:
-            # Perform cropping
-            crop_image = image[points[0][1]:points[1][1], points[0][0]:points[1][0]]
-            crop_file = f"{file_name}.png"
-            cv2.imwrite(f"{file_directory}/{crop_file}",crop_image)
+        click_stage += 1
+        if click_stage == 2:
+            x1, y1 = points[0]
+            x2, y2 = points[1]
+            x_min, x_max = sorted([x1, x2])
+            y_min, y_max = sorted([y1, y2])
+            crop_image = image[y_min:y_max, x_min:x_max]
+            crop_file = os.path.join(file_directory, f"{file_name[:-4]}_crop.png")
+            cv2.imwrite(crop_file, crop_image)
             cv2.destroyAllWindows()
-            pdf = PyPDF2.PdfWriter()
-            output = Image.open(f"{file_directory}/{crop_file}").convert('RGB')
-            doc.close()    
-            os.rename(pdf_path,f"{pdf_path}-crop")
-            output.save(f"{file_directory}/{crop_file[:-8]}.pdf")
-            os.remove(f"{file_directory}/{crop_file}")
-            os.remove(f"{pdf_path}-crop")
-            os.remove(f"{image_path}")
-            print(f"File cropped successfully")
+            # Save as PDF
+            output_pdf = crop_file.replace(".png", ".pdf")
+            Image.open(crop_file).convert("RGB").save(output_pdf)
+            # Cleanup
+            os.remove(crop_file)
+            os.remove(image_path)
+            doc.close()
+            orig_path = f"{pdf_path}-orig"
+            os.rename(pdf_path, orig_path)
+            os.remove(orig_path)
+            print(f"✅ File cropped and saved: {output_pdf}")
 
+# Display window
 cv2.namedWindow('Image')
 cv2.setMouseCallback('Image', mouse_callback)
-cv2.imshow('Image', image)
-hwnd = win32gui.FindWindow(None,'Image')
+update_display()
 
-win32gui.SetWindowPos(hwnd,win32con.HWND_TOPMOST,0,0,win32api.GetSystemMetrics(win32con.SM_CXSCREEN),win32api.GetSystemMetrics(win32con.SM_CYSCREEN), win32con.SWP_SHOWWINDOW)
+# Force window fullscreen
+hwnd = win32gui.FindWindow(None, 'Image')
+win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0,
+                      win32api.GetSystemMetrics(win32con.SM_CXSCREEN),
+                      win32api.GetSystemMetrics(win32con.SM_CYSCREEN),
+                      win32con.SWP_SHOWWINDOW)
+
 cv2.waitKey(0)
-
-
-
-
-
-
