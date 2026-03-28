@@ -1,5 +1,5 @@
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs';
-import { showUploadOverlay, hideUploadOverlay, uploadWithProgress } from '/static/utils.js';
+import { showUploadOverlay, hideUploadOverlay, setOverlayMessage, uploadWithProgress } from '/static/utils.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs';
@@ -60,23 +60,25 @@ async function handleFile(file) {
     setStatus(err.message, 'error');
     return;
   }
-  hideUploadOverlay();
 
   sessionId = data.session_id;
 
-  setStatus('Rendering pages…');
+  setOverlayMessage('Loading PDF…');
   try {
     pdfDoc = await pdfjsLib.getDocument(`/api/split/pdf/${sessionId}`).promise;
   } catch {
+    hideUploadOverlay();
     setStatus('Could not render PDF.', 'error');
     return;
   }
 
+  setOverlayMessage(`Rendering ${pdfDoc.numPages} page(s)…`);
   splitUploadSection.hidden = false;
   splitUploadZone.hidden    = true;
   splitViewerSection.hidden = false;
 
   await renderThumbnails();
+  hideUploadOverlay();
   setStatus('Click pages to deselect them, then Split & Download.');
 }
 

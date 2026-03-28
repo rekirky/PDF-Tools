@@ -1,4 +1,4 @@
-import { showUploadOverlay, hideUploadOverlay, uploadWithProgress } from '/static/utils.js';
+import { showUploadOverlay, hideUploadOverlay, setOverlayMessage, uploadWithProgress } from '/static/utils.js';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let fileList   = [];   // [{id, filename, page_count}]
@@ -60,6 +60,9 @@ async function handleFiles(files) {
     setStatus(err.message, 'error');
     return;
   }
+
+  setOverlayMessage('Processing…');
+  await new Promise(r => setTimeout(r, 0)); // allow repaint
   hideUploadOverlay();
 
   fileList.push(...data);

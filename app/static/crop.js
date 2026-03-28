@@ -1,5 +1,5 @@
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs';
-import { showUploadOverlay, hideUploadOverlay, uploadWithProgress } from '/static/utils.js';
+import { showUploadOverlay, hideUploadOverlay, setOverlayMessage, uploadWithProgress } from '/static/utils.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs';
@@ -70,18 +70,19 @@ async function handleFile(file) {
     setStatus(err.message, 'error');
     return;
   }
-  hideUploadOverlay();
 
   sessionId   = data.session_id;
   currentPage = 1;
 
-  setStatus('Loading PDF…');
+  setOverlayMessage('Loading PDF…');
   try {
     pdfDoc = await pdfjsLib.getDocument(`/api/pdf/${sessionId}`).promise;
   } catch {
+    hideUploadOverlay();
     setStatus('Could not render PDF.', 'error');
     return;
   }
+  hideUploadOverlay();
 
   pageCountEl.textContent = pdfDoc.numPages;
 

@@ -12,6 +12,12 @@ export function showUploadOverlay(msg = 'Uploading…') {
   overlay.hidden = false;
 }
 
+export function setOverlayMessage(msg) {
+  overlayMsg.textContent          = msg;
+  progressBar.classList.add('indeterminate');
+  progressPct.textContent         = '';
+}
+
 export function hideUploadOverlay() {
   overlay.hidden = true;
 }
