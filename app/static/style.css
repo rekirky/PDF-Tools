@@ -39,6 +39,12 @@ header {
   align-items: center;
   gap: 32px;
 }
+.site-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
 .logo {
   font-weight: 700;
   font-size: 16px;
