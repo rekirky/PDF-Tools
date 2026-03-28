@@ -37,7 +37,7 @@ The image is built and pushed to [ghcr.io](https://github.com/rekirky/PDF-Tools/
 docker compose up -d
 ```
 
-Accessible at `http://your-unraid-ip:2345`.
+Accessible at `http://your-server-ip:2345`.
 
 [Watchtower](https://containrrr.dev/watchtower/) is included — it polls for a new image every 5 minutes and restarts the container automatically when one is available.
 
