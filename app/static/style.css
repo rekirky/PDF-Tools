@@ -87,6 +87,7 @@ main {
   align-items: center;
   justify-content: center;
 }
+#upload-overlay[hidden] { display: none; }
 .upload-overlay-box {
   background: var(--surface);
   border: 1px solid var(--border);
