@@ -275,11 +275,15 @@ cropBtn.addEventListener('click', async () => {
     return;
   }
 
+  const disposition = res.headers.get('Content-Disposition') || '';
+  const match = disposition.match(/filename="([^"]+)"/);
+  const filename = match ? match[1] : 'cropped.pdf';
+
   const blob = await res.blob();
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = 'cropped.pdf';
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

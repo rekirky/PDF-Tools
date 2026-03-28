@@ -1,13 +1,15 @@
 services:
   pdf-tools:
     image: ghcr.io/rekirky/pdf-tools:latest
+    container_name: pdftools
+    restart: unless-stopped
     ports:
       - "2345:8000"
-    restart: unless-stopped
 
   watchtower:
     image: containrrr/watchtower
+    container_name: pdftools-watchtower
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 300 pdf-tools
-    restart: unless-stopped
+    command: --interval 300 --cleanup pdftools
