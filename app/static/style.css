@@ -236,10 +236,13 @@ main {
   border-radius: var(--radius);
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 0.15s, opacity 0.15s;
+  transition: border-color 0.15s;
   background: var(--surface);
 }
-.thumb-item:hover { border-color: var(--muted); }
+.thumb-item.selected              { border-color: var(--accent); }
+.thumb-item.deselected            { border-color: var(--border); }
+.thumb-item.deselected .thumb-canvas { filter: brightness(0.25); }
+.thumb-item:hover                 { border-color: var(--muted); }
 
 .thumb-canvas {
   display: block;
@@ -252,12 +255,6 @@ main {
   text-align: center;
   padding: 5px 0;
   background: var(--surface);
-}
-.thumb-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  pointer-events: none;
 }
 .thumb-check {
   position: absolute;
@@ -272,6 +269,7 @@ main {
   justify-content: center;
   pointer-events: none;
 }
+.thumb-item.deselected .thumb-check { display: none; }
 
 /* ── Join status bar ── */
 #join-status-bar {

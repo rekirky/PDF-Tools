@@ -106,12 +106,7 @@ async function renderThumbnails() {
     canvas.className = 'thumb-canvas';
     await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
 
-    // Dark overlay — shown when deselected
-    const overlay     = document.createElement('div');
-    overlay.className = 'thumb-overlay';
-    overlay.style.display = 'none';
-
-    // Checkmark badge — shown when selected
+    // Checkmark badge — hidden via CSS when deselected
     const check       = document.createElement('div');
     check.className   = 'thumb-check';
     check.innerHTML   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="11" height="11"><path d="M5 13l4 4L19 7"/></svg>`;
@@ -122,7 +117,6 @@ async function renderThumbnails() {
     label.textContent = `Page ${i + 1}`;
 
     item.appendChild(canvas);
-    item.appendChild(overlay);
     item.appendChild(check);
     item.appendChild(label);
 
@@ -137,21 +131,15 @@ async function renderThumbnails() {
 
 // ── Selection ─────────────────────────────────────────────────────────────────
 function setPageSelected(index, item, selected) {
-  const overlay = item.querySelector('.thumb-overlay');
-  const check   = item.querySelector('.thumb-check');
-
   if (selected) {
     selectedPages.add(index);
-    overlay.style.display = 'none';
-    check.style.display   = 'flex';
-    item.style.borderColor = '';  // revert to CSS default (accent)
+    item.classList.add('selected');
+    item.classList.remove('deselected');
   } else {
     selectedPages.delete(index);
-    overlay.style.display  = 'block';
-    check.style.display    = 'none';
-    item.style.borderColor = 'var(--border)';
+    item.classList.remove('selected');
+    item.classList.add('deselected');
   }
-
   updateUI();
 }
 
