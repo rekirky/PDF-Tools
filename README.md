@@ -4,12 +4,25 @@ Browser-based PDF manipulation tools, self-hosted via Docker.
 
 ## Features
 
-| Tool | Status |
-|------|--------|
-| Crop | Working |
-| Join multiple files into one | Planned |
-| Split file into individual pages | Planned |
-| Rotate 90° clockwise / counter-clockwise | Planned |
+| Tool   | Version | Status  |
+|--------|---------|---------|
+| Crop   | v2.1.0  | Working |
+| Join   | v2.2.0  | Working |
+| Split  | —       | Planned |
+| Rotate | —       | Planned |
+
+## Changelog
+
+### v2.2.0
+- Added Join tool — upload multiple PDFs, drag to reorder, merge into one file
+
+### v2.1.0
+- Added Crop tool — upload a PDF, draw a selection rectangle, download the cropped page
+
+### v2.0.0
+- Full rewrite as a browser-based web app (FastAPI + PDF.js)
+- Docker deployment replacing the previous Windows desktop scripts
+- Auto-updates via Watchtower
 
 ## Deployment
 
