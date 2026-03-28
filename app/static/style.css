@@ -239,9 +239,16 @@ main {
   transition: border-color 0.15s, opacity 0.15s;
   background: var(--surface);
 }
-.thumb-item:hover       { border-color: var(--muted); }
-.thumb-item.selected    { border-color: var(--accent); }
-.thumb-item.deselected  { opacity: 0.35; border-color: var(--border); }
+.thumb-item:hover                { border-color: var(--muted); }
+.thumb-item.selected             { border-color: var(--accent); }
+.thumb-item.deselected           { border-color: var(--border); }
+.thumb-item.deselected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
 
 .thumb-canvas {
   display: block;
