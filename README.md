@@ -8,10 +8,13 @@ Browser-based PDF manipulation tools, self-hosted via Docker.
 |--------|---------|---------|
 | Crop   | v2.1.0  | Working |
 | Join   | v2.2.0  | Working |
-| Split  | —       | Planned |
+| Split  | v2.3.0  | Working |
 | Rotate | —       | Planned |
 
 ## Changelog
+
+### v2.3.0
+- Added Split tool — upload a PDF, select pages via thumbnail grid, download a ZIP of individual PDFs
 
 ### v2.2.0
 - Added Join tool — upload multiple PDFs, drag to reorder, merge into one file
