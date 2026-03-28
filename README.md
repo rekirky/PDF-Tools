@@ -1,19 +1,39 @@
 # PDF Tools
- Tools used to manipulate PDF files
 
-Selection of tools I am making to facilitate quick changes to PDF files. 
+Browser-based PDF manipulation tools, self-hosted via Docker.
 
-Made using Python and conduct simple processes to help with my e-document filing.
-I also made a quick bat file so I can run these from a single source quickly. 
+## Features
 
-## Tools currently working
+| Tool | Status |
+|------|--------|
+| Crop | Working |
+| Join multiple files into one | Planned |
+| Split file into individual pages | Planned |
+| Rotate 90° clockwise / counter-clockwise | Planned |
 
-* Join multiple files into one
-* Split file into multiple ones
-* Crop a file using mouse input
-* Rotate a file 90 degrees clockwise or counter clockwise
+## Deployment
 
-## To come (probably - depends on my needs)
+The image is built and pushed to [ghcr.io](https://github.com/rekirky/PDF-Tools/pkgs/container/pdf-tools) automatically on every push to `main`.
 
-* Crop an entire document
-* Run multiple commands at once - rotate & crop
+### Run on Unraid
+
+```bash
+docker compose up -d
+```
+
+Accessible at `http://your-unraid-ip:2345`.
+
+[Watchtower](https://containrrr.dev/watchtower/) is included — it polls for a new image every 5 minutes and restarts the container automatically when one is available.
+
+### Update manually
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+## Local development
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
