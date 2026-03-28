@@ -31,7 +31,7 @@ Browser-based PDF manipulation tools, self-hosted via Docker.
 
 The image is built and pushed to [ghcr.io](https://github.com/rekirky/PDF-Tools/pkgs/container/pdf-tools) automatically on every push to `main`.
 
-### Run on Unraid
+### Running on your server
 
 ```bash
 docker compose up -d
