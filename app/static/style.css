@@ -71,8 +71,8 @@ main {
   padding: 32px 24px;
 }
 
-/* ── Upload ── */
-#upload-zone {
+/* ── Upload zone (shared) ── */
+.upload-zone {
   border: 2px dashed var(--border);
   border-radius: 12px;
   padding: 80px 40px;
@@ -82,8 +82,8 @@ main {
   max-width: 480px;
   margin: 60px auto 0;
 }
-#upload-zone:hover,
-#upload-zone.drag-over {
+.upload-zone:hover,
+.upload-zone.drag-over {
   border-color: var(--accent);
   background: rgba(99,102,241,0.05);
 }
@@ -199,4 +199,82 @@ main {
   top: 0;
   left: 0;
   cursor: crosshair;
+}
+
+/* ── Join status bar ── */
+#join-status-bar {
+  margin-bottom: 16px;
+  min-height: 22px;
+}
+#join-status {
+  font-size: 12px;
+  color: var(--muted);
+}
+#join-status.error   { color: var(--danger); }
+#join-status.success { color: #22c55e; }
+
+/* ── Join file list ── */
+.file-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 640px;
+}
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.1s;
+  user-select: none;
+}
+.file-item.dragging    { opacity: 0.4; }
+.file-item.drop-target { border-color: var(--accent); }
+
+.drag-handle {
+  color: var(--muted);
+  cursor: grab;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.drag-handle:active { cursor: grabbing; }
+
+.file-order {
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 16px;
+  text-align: right;
+}
+.file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.file-pages {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.btn-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-remove:hover {
+  color: var(--danger);
+  background: rgba(239,68,68,0.1);
 }

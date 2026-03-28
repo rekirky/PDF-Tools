@@ -15,8 +15,8 @@ let dragStart  = null;   // {x, y} in canvas px
 let selection  = null;   // {x0, y0, x1, y1} in canvas px (normalised)
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
-const uploadSection  = document.getElementById('upload-section');
-const viewerSection  = document.getElementById('viewer-section');
+const uploadSection  = document.getElementById('crop-upload');
+const viewerSection  = document.getElementById('crop-viewer');
 const uploadZone     = document.getElementById('upload-zone');
 const fileInput      = document.getElementById('file-input');
 const pdfCanvas      = document.getElementById('pdf-canvas');

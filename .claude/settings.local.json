@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c \"import ast; ast.parse\\(open\\(''app/main.py''\\).read\\(\\)\\); ast.parse\\(open\\(''app/routers/crop.py''\\).read\\(\\)\\); print\\(''syntax OK''\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''app/main.py''\\).read\\(\\)\\); ast.parse\\(open\\(''app/routers/crop.py''\\).read\\(\\)\\); print\\(''syntax OK''\\)\")",
+      "Bash(python -c \"import ast; [ast.parse\\(open\\(f\\).read\\(\\)\\) for f in [''app/main.py'',''app/routers/crop.py'',''app/routers/join.py'']]; print\\(''syntax OK''\\)\")"
     ]
   }
 }

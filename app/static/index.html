@@ -13,7 +13,7 @@
       <span class="logo">PDF Tools</span>
       <nav class="tool-tabs">
         <button class="tab active" data-tool="crop">Crop</button>
-        <button class="tab disabled" title="Coming soon">Join</button>
+        <button class="tab" data-tool="join">Join</button>
         <button class="tab disabled" title="Coming soon">Split</button>
         <button class="tab disabled" title="Coming soon">Rotate</button>
       </nav>
@@ -22,64 +22,112 @@
 
   <main>
 
-    <!-- Upload -->
-    <section id="upload-section">
-      <div id="upload-zone">
-        <div class="upload-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
-          </svg>
+    <!-- ── Crop ── -->
+    <div id="tool-crop" class="tool-panel">
+
+      <section id="crop-upload">
+        <div id="upload-zone" class="upload-zone">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+            </svg>
+          </div>
+          <p class="upload-primary">Drop a PDF here</p>
+          <p class="upload-secondary">or click to browse</p>
+          <input type="file" id="file-input" accept=".pdf" hidden>
         </div>
-        <p class="upload-primary">Drop a PDF here</p>
-        <p class="upload-secondary">or click to browse</p>
-        <input type="file" id="file-input" accept=".pdf" hidden>
-      </div>
-    </section>
+      </section>
 
-    <!-- Viewer -->
-    <section id="viewer-section" hidden>
-      <div class="toolbar">
-        <button id="new-file-btn" class="btn btn-ghost">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <path d="M15 19l-7-7 7-7"/>
-          </svg>
-          New file
-        </button>
-
-        <div class="page-nav">
-          <button id="prev-page" class="btn btn-icon" disabled>
+      <section id="crop-viewer" hidden>
+        <div class="toolbar">
+          <button id="new-file-btn" class="btn btn-ghost">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
               <path d="M15 19l-7-7 7-7"/>
             </svg>
+            New file
           </button>
-          <span class="page-label">Page <strong id="page-num">1</strong> of <strong id="page-count">1</strong></span>
-          <button id="next-page" class="btn btn-icon" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <path d="M9 5l7 7-7 7"/>
+          <div class="page-nav">
+            <button id="prev-page" class="btn btn-icon" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="page-label">Page <strong id="page-num">1</strong> of <strong id="page-count">1</strong></span>
+            <button id="next-page" class="btn btn-icon" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <div class="toolbar-actions">
+            <button id="clear-btn" class="btn btn-secondary">Clear</button>
+            <button id="crop-btn" class="btn btn-primary" disabled>Crop &amp; Download</button>
+          </div>
+        </div>
+        <div id="status-bar">
+          <span id="status">Draw a selection rectangle on the PDF</span>
+        </div>
+        <div id="canvas-wrap">
+          <div id="canvas-container">
+            <canvas id="pdf-canvas"></canvas>
+            <canvas id="overlay-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── Join ── -->
+    <div id="tool-join" class="tool-panel" hidden>
+
+      <section id="join-upload">
+        <div id="join-upload-zone" class="upload-zone">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
             </svg>
+          </div>
+          <p class="upload-primary">Drop PDFs here</p>
+          <p class="upload-secondary">Select multiple files — or click to browse</p>
+          <input type="file" id="join-file-input" accept=".pdf" multiple hidden>
+        </div>
+      </section>
+
+      <section id="join-list" hidden>
+        <div class="toolbar">
+          <button id="join-new-btn" class="btn btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M15 19l-7-7 7-7"/>
+            </svg>
+            New
           </button>
+          <div class="toolbar-actions">
+            <button id="add-more-btn" class="btn btn-secondary">+ Add files</button>
+            <button id="join-btn" class="btn btn-primary" disabled>Join &amp; Download</button>
+          </div>
         </div>
-
-        <div class="toolbar-actions">
-          <button id="clear-btn" class="btn btn-secondary">Clear</button>
-          <button id="crop-btn" class="btn btn-primary" disabled>Crop &amp; Download</button>
+        <div id="join-status-bar">
+          <span id="join-status"></span>
         </div>
-      </div>
+        <ul id="join-file-list" class="file-list"></ul>
+      </section>
 
-      <div id="status-bar">
-        <span id="status">Draw a selection rectangle on the PDF</span>
-      </div>
-
-      <div id="canvas-wrap">
-        <div id="canvas-container">
-          <canvas id="pdf-canvas"></canvas>
-          <canvas id="overlay-canvas"></canvas>
-        </div>
-      </div>
-    </section>
+    </div>
 
   </main>
 
+  <script>
+    document.querySelectorAll('.tab:not(.disabled)').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tool-panel').forEach(p => { p.hidden = true; });
+        tab.classList.add('active');
+        document.getElementById('tool-' + tab.dataset.tool).hidden = false;
+      });
+    });
+  </script>
+
   <script type="module" src="/static/crop.js"></script>
+  <script type="module" src="/static/join.js"></script>
 </body>
 </html>
