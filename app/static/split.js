@@ -4,8 +4,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs';
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let pdfDoc      = null;
-let sessionId   = null;
+let pdfDoc        = null;
+let sessionId     = null;
 let selectedPages = new Set();  // 0-indexed
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
@@ -48,7 +48,6 @@ async function handleFile(file) {
   }
 
   setStatus('Uploading…');
-
   const formData = new FormData();
   formData.append('file', file);
 
@@ -89,38 +88,45 @@ async function renderThumbnails() {
   splitThumbGrid.innerHTML = '';
   selectedPages.clear();
 
-  const total = pdfDoc.numPages;
+  for (let i = 0; i < pdfDoc.numPages; i++) {
+    const page     = await pdfDoc.getPage(i + 1);
+    const unscaled = page.getViewport({ scale: 1 });
+    const scale    = 120 / unscaled.width;
+    const viewport = page.getViewport({ scale });
 
-  for (let i = 0; i < total; i++) {
-    const page      = await pdfDoc.getPage(i + 1);
-    const unscaled  = page.getViewport({ scale: 1 });
-    const scale     = 120 / unscaled.width;
-    const viewport  = page.getViewport({ scale });
+    // Wrapper
+    const item         = document.createElement('div');
+    item.className     = 'thumb-item';
+    item.dataset.page  = i;
 
-    const item = document.createElement('div');
-    item.className    = 'thumb-item selected';
-    item.dataset.page = i;
-
+    // PDF canvas
     const canvas    = document.createElement('canvas');
     canvas.width    = Math.floor(viewport.width);
     canvas.height   = Math.floor(viewport.height);
     canvas.className = 'thumb-canvas';
-
     await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
 
+    // Dark overlay — shown when deselected
+    const overlay     = document.createElement('div');
+    overlay.className = 'thumb-overlay';
+    overlay.style.display = 'none';
+
+    // Checkmark badge — shown when selected
+    const check       = document.createElement('div');
+    check.className   = 'thumb-check';
+    check.innerHTML   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="11" height="11"><path d="M5 13l4 4L19 7"/></svg>`;
+
+    // Page label
     const label       = document.createElement('div');
     label.className   = 'thumb-label';
     label.textContent = `Page ${i + 1}`;
 
-    const check       = document.createElement('div');
-    check.className   = 'thumb-check';
-    check.innerHTML   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><path d="M5 13l4 4L19 7"/></svg>`;
-
     item.appendChild(canvas);
-    item.appendChild(label);
+    item.appendChild(overlay);
     item.appendChild(check);
+    item.appendChild(label);
 
-    item.addEventListener('click', () => togglePage(i, item));
+    item.addEventListener('click', () => setPageSelected(i, item, !selectedPages.has(i)));
 
     splitThumbGrid.appendChild(item);
     selectedPages.add(i);
@@ -130,36 +136,35 @@ async function renderThumbnails() {
 }
 
 // ── Selection ─────────────────────────────────────────────────────────────────
-function togglePage(index, item) {
-  if (selectedPages.has(index)) {
-    selectedPages.delete(index);
-    item.classList.remove('selected');
-    item.classList.add('deselected');
-  } else {
+function setPageSelected(index, item, selected) {
+  const overlay = item.querySelector('.thumb-overlay');
+  const check   = item.querySelector('.thumb-check');
+
+  if (selected) {
     selectedPages.add(index);
-    item.classList.remove('deselected');
-    item.classList.add('selected');
+    overlay.style.display = 'none';
+    check.style.display   = 'flex';
+    item.style.borderColor = '';  // revert to CSS default (accent)
+  } else {
+    selectedPages.delete(index);
+    overlay.style.display  = 'block';
+    check.style.display    = 'none';
+    item.style.borderColor = 'var(--border)';
   }
+
   updateUI();
 }
 
 selectAllBtn.addEventListener('click', () => {
   splitThumbGrid.querySelectorAll('.thumb-item').forEach(item => {
-    const i = parseInt(item.dataset.page);
-    selectedPages.add(i);
-    item.classList.add('selected');
-    item.classList.remove('deselected');
+    setPageSelected(parseInt(item.dataset.page), item, true);
   });
-  updateUI();
 });
 
 selectNoneBtn.addEventListener('click', () => {
-  selectedPages.clear();
   splitThumbGrid.querySelectorAll('.thumb-item').forEach(item => {
-    item.classList.remove('selected');
-    item.classList.add('deselected');
+    setPageSelected(parseInt(item.dataset.page), item, false);
   });
-  updateUI();
 });
 
 function updateUI() {

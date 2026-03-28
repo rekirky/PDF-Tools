@@ -239,16 +239,7 @@ main {
   transition: border-color 0.15s, opacity 0.15s;
   background: var(--surface);
 }
-.thumb-item:hover                { border-color: var(--muted); }
-.thumb-item.selected             { border-color: var(--accent); }
-.thumb-item.deselected           { border-color: var(--border); }
-.thumb-item.deselected::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  pointer-events: none;
-}
+.thumb-item:hover { border-color: var(--muted); }
 
 .thumb-canvas {
   display: block;
@@ -262,6 +253,12 @@ main {
   padding: 5px 0;
   background: var(--surface);
 }
+.thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+}
 .thumb-check {
   position: absolute;
   top: 6px;
@@ -273,10 +270,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transition: opacity 0.15s;
+  pointer-events: none;
 }
-.thumb-item.selected .thumb-check { opacity: 1; }
 
 /* ── Join status bar ── */
 #join-status-bar {
