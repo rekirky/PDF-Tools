@@ -1,4 +1,4 @@
-import { showUploadOverlay, hideUploadOverlay, setOverlayMessage } from '/static/utils.js';
+import { showUploadOverlay, hideUploadOverlay } from '/static/utils.js';
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const scanCaptureSection = document.getElementById('scan-capture');
@@ -65,12 +65,15 @@ async function handleFile(file) {
   img.onload = () => {
     URL.revokeObjectURL(url);
     originalImage = img;
-    renderImage();
+    // Show editor first so the container has layout dimensions before renderImage reads clientWidth
     scanCaptureSection.hidden = false;
     scanUploadZone.hidden     = true;
     scanEditorSection.hidden  = false;
-    setStatus('Draw a crop area, or save the full image as PDF');
-    scanConvertBtn.disabled = false;
+    requestAnimationFrame(() => {
+      renderImage();
+      setStatus('Draw a crop area, or save the full image as PDF');
+      scanConvertBtn.disabled = false;
+    });
   };
   img.onerror = () => {
     URL.revokeObjectURL(url);
