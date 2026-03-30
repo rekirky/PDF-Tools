@@ -14,6 +14,9 @@ Browser-based PDF manipulation tools, self-hosted via Docker.
 
 ## Changelog
 
+### v2.5.1
+- Moved legacy Windows desktop scripts, PyInstaller build artifacts, and duplicate root icons to `old-scripts/`
+
 ### v2.5.0
 - Added Scan tool — take a photo or upload an image, optionally crop it, download as PDF
 
