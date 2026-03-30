@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
-from app.routers import crop, join, split, rotate
+from app.routers import crop, join, split, rotate, photo
 
 app = FastAPI(title="PDF Tools")
 
@@ -10,6 +10,7 @@ app.include_router(crop.router, prefix="/api")
 app.include_router(join.router, prefix="/api/join")
 app.include_router(split.router, prefix="/api/split")
 app.include_router(rotate.router, prefix="/api/rotate")
+app.include_router(photo.router, prefix="/api/photo")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 

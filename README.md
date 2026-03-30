@@ -10,8 +10,12 @@ Browser-based PDF manipulation tools, self-hosted via Docker.
 | Join   | v2.2.0  | Working |
 | Split  | v2.3.0  | Working |
 | Rotate | v2.4.0  | Working |
+| Scan   | v2.5.0  | Working |
 
 ## Changelog
+
+### v2.5.0
+- Added Scan tool — take a photo or upload an image, optionally crop it, download as PDF
 
 ### v2.4.0
 - Added Rotate tool — upload a PDF, select pages, choose 90° right / 180° / 90° left, download rotated PDF
