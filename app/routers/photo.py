@@ -1,10 +1,14 @@
 import io
+import os
+from pathlib import Path
 
 import fitz
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 
 router = APIRouter()
+
+CONSUME_DIR = Path(os.environ.get("PAPERLESS_CONSUME_DIR", "/consume"))
 
 SUPPORTED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/bmp"}
 FITZ_TYPE_MAP   = {
@@ -52,3 +56,38 @@ async def image_to_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
     )
+
+
+@router.post("/send-to-paperless")
+async def send_to_paperless(
+    file: UploadFile = File(...),
+    filename: str = Form(default="receipt"),
+):
+    if not CONSUME_DIR.is_dir():
+        raise HTTPException(503, "Paperless consume folder is not mounted or accessible")
+
+    content = await file.read()
+    if not content:
+        raise HTTPException(400, "Empty file received")
+
+    filetype = _detect_filetype(content, file.content_type or "image/jpeg")
+
+    try:
+        img_doc   = fitz.open(stream=content, filetype=filetype)
+        pdf_bytes = img_doc.convert_to_pdf()
+        img_doc.close()
+    except Exception as e:
+        raise HTTPException(500, f"Could not convert image to PDF: {e}")
+
+    stem = filename.removesuffix(".pdf").removesuffix(".jpg").removesuffix(".jpeg").removesuffix(".png")
+    dest = CONSUME_DIR / f"{stem}.pdf"
+
+    # Avoid overwriting — append a counter if the file already exists
+    counter = 1
+    while dest.exists():
+        dest = CONSUME_DIR / f"{stem}_{counter}.pdf"
+        counter += 1
+
+    dest.write_bytes(pdf_bytes)
+
+    return JSONResponse({"filename": dest.name})

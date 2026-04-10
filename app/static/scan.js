@@ -12,6 +12,7 @@ const scanImageCanvas    = document.getElementById('scan-image-canvas');
 const scanOverlayCanvas  = document.getElementById('scan-overlay-canvas');
 const scanStatusEl       = document.getElementById('scan-status');
 const scanConvertBtn     = document.getElementById('scan-convert-btn');
+const scanPaperlessBtn   = document.getElementById('scan-paperless-btn');
 const scanClearBtn       = document.getElementById('scan-clear-btn');
 const scanNewBtn         = document.getElementById('scan-new-btn');
 
@@ -72,7 +73,8 @@ async function handleFile(file) {
     requestAnimationFrame(() => {
       renderImage();
       setStatus('Draw a crop area, or save the full image as PDF');
-      scanConvertBtn.disabled = false;
+      scanConvertBtn.disabled   = false;
+      scanPaperlessBtn.disabled = false;
     });
   };
   img.onerror = () => {
@@ -199,15 +201,8 @@ scanClearBtn.addEventListener('click', () => {
   setStatus('Draw a crop area, or save the full image as PDF');
 });
 
-// ── Convert & download ────────────────────────────────────────────────────────
-scanConvertBtn.addEventListener('click', async () => {
-  if (!originalImage || !currentFile) return;
-
-  scanConvertBtn.disabled = true;
-  setStatus('Converting…');
-  showUploadOverlay('Converting…');
-
-  // Compute crop region in original image coordinates
+// ── Shared: build FormData from current image/crop ───────────────────────────
+async function buildFormData() {
   const scaleX = originalImage.naturalWidth  / scanImageCanvas.width;
   const scaleY = originalImage.naturalHeight / scanImageCanvas.height;
 
@@ -227,7 +222,6 @@ scanConvertBtn.addEventListener('click', async () => {
     );
     imageBlob = await new Promise(res => cropCanvas.toBlob(res, 'image/jpeg', 0.92));
   } else {
-    // No crop — send original file directly
     imageBlob = currentFile;
   }
 
@@ -235,6 +229,23 @@ scanConvertBtn.addEventListener('click', async () => {
   const formData = new FormData();
   formData.append('file', imageBlob, stem + '.jpg');
   formData.append('filename', stem);
+  return { formData, stem };
+}
+
+function setButtons(disabled) {
+  scanConvertBtn.disabled      = disabled;
+  scanPaperlessBtn.disabled    = disabled;
+}
+
+// ── Convert & download ────────────────────────────────────────────────────────
+scanConvertBtn.addEventListener('click', async () => {
+  if (!originalImage || !currentFile) return;
+
+  setButtons(true);
+  setStatus('Converting…');
+  showUploadOverlay('Converting…');
+
+  const { formData, stem } = await buildFormData();
 
   let res;
   try {
@@ -242,7 +253,7 @@ scanConvertBtn.addEventListener('click', async () => {
   } catch {
     hideUploadOverlay();
     setStatus('Request failed — server unreachable.', 'error');
-    scanConvertBtn.disabled = false;
+    setButtons(false);
     return;
   }
 
@@ -250,7 +261,7 @@ scanConvertBtn.addEventListener('click', async () => {
     hideUploadOverlay();
     const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
     setStatus('Failed: ' + err.detail, 'error');
-    scanConvertBtn.disabled = false;
+    setButtons(false);
     return;
   }
 
@@ -270,7 +281,41 @@ scanConvertBtn.addEventListener('click', async () => {
 
   hideUploadOverlay();
   setStatus('Done — file downloaded.', 'success');
-  scanConvertBtn.disabled = false;
+  setButtons(false);
+});
+
+// ── Send to Paperless ─────────────────────────────────────────────────────────
+scanPaperlessBtn.addEventListener('click', async () => {
+  if (!originalImage || !currentFile) return;
+
+  setButtons(true);
+  setStatus('Sending to Paperless…');
+  showUploadOverlay('Sending to Paperless…');
+
+  const { formData, stem } = await buildFormData();
+
+  let res;
+  try {
+    res = await fetch('/api/photo/send-to-paperless', { method: 'POST', body: formData });
+  } catch {
+    hideUploadOverlay();
+    setStatus('Request failed — server unreachable.', 'error');
+    setButtons(false);
+    return;
+  }
+
+  if (!res.ok) {
+    hideUploadOverlay();
+    const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
+    setStatus('Failed: ' + err.detail, 'error');
+    setButtons(false);
+    return;
+  }
+
+  const { filename } = await res.json();
+  hideUploadOverlay();
+  setStatus(`Sent to Paperless — ${filename}`, 'success');
+  setButtons(false);
 });
 
 // ── New photo ─────────────────────────────────────────────────────────────────
@@ -286,6 +331,7 @@ scanNewBtn.addEventListener('click', () => {
   scanEditorSection.hidden     = true;
   scanUploadZone.hidden        = false;
   scanConvertBtn.disabled      = true;
+  scanPaperlessBtn.disabled    = true;
   setStatus('Draw a crop area, or save the full image as PDF');
 });
 

@@ -5,6 +5,10 @@ services:
     restart: unless-stopped
     ports:
       - "2345:8000"
+    volumes:
+      - /mnt/storage/paperwork/Consume:/consume
+    environment:
+      - PAPERLESS_CONSUME_DIR=/consume
 
   watchtower:
     image: containrrr/watchtower
