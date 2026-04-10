@@ -87,8 +87,10 @@ async function handleFile(file) {
 // ── Render image to canvas ────────────────────────────────────────────────────
 function renderImage() {
   const wrap    = document.getElementById('scan-canvas-wrap');
-  const maxW    = wrap.clientWidth  - 48 || 800;
-  const maxH    = window.innerHeight * 0.65;
+  const wrapStyle = getComputedStyle(wrap);
+  const hPad   = parseFloat(wrapStyle.paddingLeft) + parseFloat(wrapStyle.paddingRight);
+  const maxW   = (wrap.clientWidth - hPad) || (window.innerWidth - 24);
+  const maxH   = window.innerHeight * 0.6;
   const scale   = Math.min(1, maxW / originalImage.naturalWidth, maxH / originalImage.naturalHeight);
   const dispW   = Math.floor(originalImage.naturalWidth  * scale);
   const dispH   = Math.floor(originalImage.naturalHeight * scale);

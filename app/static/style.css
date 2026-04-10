@@ -459,12 +459,15 @@ main {
   padding: 24px;
   display: flex;
   justify-content: center;
+  /* Prevent the wrap itself from blowing out the page width */
+  min-width: 0;
 }
 
 #scan-canvas-container {
   position: relative;
   display: inline-block;
   box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  max-width: 100%;
 }
 
 #scan-image-canvas {
@@ -477,4 +480,37 @@ main {
   left: 0;
   cursor: crosshair;
   touch-action: none;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  /* Reduce outer padding */
+  main { padding: 16px 12px; }
+  .header-inner { padding: 0 12px; gap: 12px; }
+
+  /* Tabs: scroll horizontally instead of wrapping */
+  .tool-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .tool-tabs::-webkit-scrollbar { display: none; }
+  .tab { white-space: nowrap; padding: 6px 10px; font-size: 12px; }
+
+  /* Upload zone: less padding on small screens */
+  .upload-zone { padding: 40px 20px; margin-top: 24px; }
+
+  /* Toolbar: stack "New photo" above action buttons */
+  .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+  .toolbar-actions {
+    margin-left: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .toolbar-actions .btn { flex: 1 1 auto; text-align: center; justify-content: center; }
+
+  /* Canvas wrap: less padding */
+  #scan-canvas-wrap { padding: 12px; }
 }

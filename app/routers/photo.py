@@ -89,5 +89,6 @@ async def send_to_paperless(
         counter += 1
 
     dest.write_bytes(pdf_bytes)
+    os.chmod(dest, 0o664)
 
     return JSONResponse({"filename": dest.name})
